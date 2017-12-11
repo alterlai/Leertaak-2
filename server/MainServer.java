@@ -10,25 +10,25 @@ import java.net.Socket;
 public class MainServer {
 	public static void main(String[] args)
 	{
-//		try {
-//			// Start a new server socket.
-//			ServerSocket sock = new ServerSocket(7789);
-//			Socket client;
-//			// Accept new client connections.
-//			if ((client = sock.accept()) != null)
-//			{
-//				System.out.println("Client connected");
-//				System.out.println("Starting new XMLParser");
-//				XMLParser parser = new XMLParser(client);
-//				parser.start();
-//			}
-//		}
-//		catch(IOException ioe) {
-//			System.err.println(ioe);
-//		}
-		//Debugging
-		System.out.println("Starting new XMLParser");
-		XMLParser parser = new XMLParser(new Socket());
-		parser.start();
+		try {
+			// Start a new server socket.
+			ServerSocket sock = new ServerSocket(7789);
+			Socket client;
+			// Accept new client connections.
+			if ((client = sock.accept()) != null)
+			{
+				System.out.println("Client connected");
+				System.out.println("Starting new XMLParser");
+				XMLParser parser = new XMLParser(client);
+				parser.start();
+			}
+		}
+		catch(IOException ioe) {
+			System.err.println(ioe);
+		}
+//		//Debugging
+//		System.out.println("Starting new XMLParser");
+//		XMLParser parser = new XMLParser(new Socket());
+//		parser.start();
 	}
 }

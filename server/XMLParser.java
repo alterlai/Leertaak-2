@@ -15,12 +15,12 @@ public class XMLParser extends Thread {
 	}
 	
 	public void run() {
-		File xmlfile = new File("output.xml");
+		
 		SAXBuilder saxBuilder = new SAXBuilder();
 		HashMap<String, String> data = new HashMap<>();
 		try {
 			
-			Document document = saxBuilder.build(xmlfile);
+			Document document = getXML();
 			Element classElement = document.getRootElement();
 			Element measurement = classElement.getChild("MEASUREMENT");
 			List<Element> elementen = measurement.getChildren();
@@ -38,8 +38,24 @@ public class XMLParser extends Thread {
 				System.out.println(pair.getKey() + " = " + pair.getValue());
 			}
 			
-		} catch (JDOMException | IOException | NullPointerException e) {
+		} catch (JDOMException | NullPointerException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private Document getXML() throws JDOMException
+	{
+		SAXBuilder builder = new SAXBuilder();
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			Document doc = builder.build(new BufferedReader(new InputStreamReader(sock.getInputStream())));
+			System.out.println("file received");
+			System.out.println(doc);
+			return new Document();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new Document();
+		}
+		
 	}
 }
