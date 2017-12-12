@@ -5,9 +5,15 @@ import java.io.*;
 import java.util.*;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
+import java.sql.*;
 
 public class XMLParser extends Thread {
 	private Socket sock;
+	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+	private static final String DB_URL = "jdbc:mysql://localhost/unwdmi";
+	private static final String DB_USER = "root";
+	private static final String DB_PASSWORD = "";
+	
 	
 	XMLParser(Socket sock){
 		this.sock = sock;
@@ -19,6 +25,7 @@ public class XMLParser extends Thread {
 		SAXBuilder saxBuilder = new SAXBuilder();
 		HashMap<String, String> data = new HashMap<>();
 		Document document = new Document();
+		storeInDB();
 		try {
 			while((document = getXML()) != null) {
 				document = getXML();
@@ -38,6 +45,8 @@ public class XMLParser extends Thread {
 					Element element = (Element) it.next();
 					data.put(element.getName(), element.getValue());
 				}
+				
+				
 				
 				// Iterate over the data map and print the values.
 //				it = data.entrySet().iterator();
@@ -72,6 +81,35 @@ public class XMLParser extends Thread {
 			System.out.println("Client disconnected!");
 			return null;
 		}
-		
+	}
+	
+	private static void storeInDB() {
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			
+			System.out.println("Opening connection to database...");
+			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			
+			// Execute query
+			String sql = "Select * from stations LIMIT 1";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			// Extract data
+			while(rs.next()) {
+				int stn = rs.getInt("stn");
+				String name = rs.getString("name");
+				
+				System.out.println("Station: : " + stn);
+				System.out.println("Name: " + name);
+				
+				rs.close();
+				stmt.close();
+				conn.close();
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
