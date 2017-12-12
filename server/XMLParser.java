@@ -18,28 +18,38 @@ public class XMLParser extends Thread {
 		
 		SAXBuilder saxBuilder = new SAXBuilder();
 		HashMap<String, String> data = new HashMap<>();
+		Document document = new Document();
 		try {
-			
-			Document document = getXML();
-			Element classElement = document.getRootElement();
-			Element measurement = classElement.getChild("MEASUREMENT");
-			List<Element> elementen = measurement.getChildren();
-			Iterator it = elementen.iterator();
-			
-			while(it.hasNext())
-			{
-				Element element = (Element) it.next();
-				data.put(element.getName(), element.getValue());
+			while((document = getXML()) != null) {
+				document = getXML();
+				
+				// If the connection has been terminated, stop the thread.
+				if(document == null) break;
+				
+				// Grab the parent element.
+				Element classElement = document.getRootElement();
+				Element measurement = classElement.getChild("MEASUREMENT");
+				List<Element> elementen = measurement.getChildren();
+				Iterator it = elementen.iterator();
+				
+				// Iterate over all elements in the XML document and put them in the data map.
+				while(it.hasNext())
+				{
+					Element element = (Element) it.next();
+					data.put(element.getName(), element.getValue());
+				}
+				
+				// Iterate over the data map and print the values.
+//				it = data.entrySet().iterator();
+//				while (it.hasNext()){
+//					Map.Entry pair = (Map.Entry)it.next();
+//					System.out.println(pair.getKey() + " = " + pair.getValue());
+//				}
 			}
-			
-			it = data.entrySet().iterator();
-			while (it.hasNext()){
-				Map.Entry pair = (Map.Entry)it.next();
-				System.out.println(pair.getKey() + " = " + pair.getValue());
-			}
-			
+				
 		} catch (JDOMException | NullPointerException e) {
 			e.printStackTrace();
+			System.err.println("main loop");
 		}
 	}
 	
@@ -47,14 +57,20 @@ public class XMLParser extends Thread {
 	{
 		SAXBuilder builder = new SAXBuilder();
 		try {
+			// Get the input stream.
 			BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			Document doc = builder.build(new BufferedReader(new InputStreamReader(sock.getInputStream())));
-			System.out.println("file received");
-			System.out.println(doc);
-			return new Document();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new Document();
+			String xmlstream = "";
+			String line;
+			while (!(line = in.readLine()).contains("</MEASUREMENT>")){
+				xmlstream += line;
+			}
+			xmlstream += "</MEASUREMENT></WEATHERDATA>";
+			Document xmlDocument = builder.build(new StringReader(xmlstream));
+			return xmlDocument;
+		} catch (IOException | NullPointerException e) {
+			// Socket closes.
+			System.out.println("Client disconnected!");
+			return null;
 		}
 		
 	}

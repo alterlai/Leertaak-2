@@ -15,12 +15,14 @@ public class MainServer {
 			ServerSocket sock = new ServerSocket(7789);
 			Socket client;
 			// Accept new client connections.
-			if ((client = sock.accept()) != null)
-			{
-				System.out.println("Client connected");
-				System.out.println("Starting new XMLParser");
-				XMLParser parser = new XMLParser(client);
-				parser.start();
+			while(true){
+				if ((client = sock.accept()) != null)
+				{
+					System.out.println("Client connected");
+					System.out.println("Starting new XMLParser");
+					XMLParser parser = new XMLParser(client);
+					parser.start();
+				}
 			}
 		}
 		catch(IOException ioe) {
