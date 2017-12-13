@@ -93,6 +93,7 @@ public class XMLParser extends Thread {
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 			
 			// Execute query
+			stmt = conn.createStatement();
 			String sql = "Select * from stations LIMIT 1";
 			ResultSet rs = stmt.executeQuery(sql);
 			
@@ -103,11 +104,10 @@ public class XMLParser extends Thread {
 				
 				System.out.println("Station: : " + stn);
 				System.out.println("Name: " + name);
-				
-				rs.close();
-				stmt.close();
-				conn.close();
 			}
+			rs.close();
+			stmt.close();
+			conn.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
