@@ -21,8 +21,6 @@ public class XMLParser extends Thread {
 	}
 	
 	public void run() {
-		
-		SAXBuilder saxBuilder = new SAXBuilder();
 		HashMap<String, String> data = new HashMap<>();
 		Document document = new Document();
 		storeInDB();
@@ -87,7 +85,7 @@ public class XMLParser extends Thread {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName(JDBC_DRIVER);
 			
 			System.out.println("Opening connection to database...");
 			conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);

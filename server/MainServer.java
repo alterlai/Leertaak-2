@@ -1,9 +1,6 @@
 package server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,6 +11,7 @@ public class MainServer {
 			// Start a new server socket.
 			ServerSocket sock = new ServerSocket(7789);
 			Socket client;
+			System.out.println("Server started...");
 			// Accept new client connections.
 			while(true){
 				if ((client = sock.accept()) != null)
@@ -28,6 +26,8 @@ public class MainServer {
 		catch(IOException ioe) {
 			System.err.println(ioe);
 		}
+		
+		
 //		//Debugging
 //		System.out.println("Starting new XMLParser");
 //		XMLParser parser = new XMLParser(new Socket());
