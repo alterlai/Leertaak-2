@@ -13,19 +13,23 @@ public class XMLParser extends Thread {
 	private static final String DB_URL = "jdbc:mysql://localhost/unwdmi";
 	private static final String DB_USER = "root";
 	private static final String DB_PASSWORD = "";
+	private static final int dataChuckSize = 1;
+	
+	// Aggregate data location
+	private ArrayList<HashMap<String, String>> dataStack;
 	
 	
 	XMLParser(Socket sock){
 		this.sock = sock;
+		this.dataStack = new ArrayList<>();
 		System.out.println("New thread started...");
 	}
 	
 	public void run() {
-		HashMap<String, String> data = new HashMap<>();
 		Document document = new Document();
-		storeInDB();
 		try {
 			while((document = getXML()) != null) {
+				HashMap<String, String> data = new HashMap<>();
 				document = getXML();
 				
 				// If the connection has been terminated, stop the thread.
@@ -41,10 +45,19 @@ public class XMLParser extends Thread {
 				while(it.hasNext())
 				{
 					Element element = (Element) it.next();
-					data.put(element.getName(), element.getValue());
+					if(!element.getValue().equals("null"))
+						data.put(element.getName(), element.getValue());
+					else
+						data.put(element.getName(), "NULL");
 				}
-				
-				
+
+				//Increment data count
+				dataStack.add(data);
+
+				if (dataStack.size() >= dataChuckSize)
+				{
+					storeInDB();
+				}
 				
 				// Iterate over the data map and print the values.
 //				it = data.entrySet().iterator();
@@ -81,7 +94,7 @@ public class XMLParser extends Thread {
 		}
 	}
 	
-	private static void storeInDB() {
+	private void storeInDB() {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -92,21 +105,40 @@ public class XMLParser extends Thread {
 			
 			// Execute query
 			stmt = conn.createStatement();
-			String sql = "Select * from stations LIMIT 1";
-			ResultSet rs = stmt.executeQuery(sql);
+			String sql = "INSERT INTO measurement (stn_id, date, time, temp, dewp, stp, slp, visib, wdsp, prcp, sndp, frshtt, cldc, winddir) VALUES";
 			
-			// Extract data
-			while(rs.next()) {
-				int stn = rs.getInt("stn");
-				String name = rs.getString("name");
-				
-				System.out.println("Station: : " + stn);
-				System.out.println("Name: " + name);
+			// TODO winddir variabele klopt nog niet, (vaak null).
+			// TODO interpolatie van missende waarden
+			for (int i=0; i<dataStack.size(); i++) {
+				HashMap<String, String> dataElement = dataStack.get(i);
+				sql += "(";
+				sql += dataElement.get("STN") + ", ";
+				sql += "\'" + dataElement.get("DATE") + "\' , ";
+				sql += "\'" + dataElement.get("TIME") + "\' , ";
+				sql += dataElement.get("TEMP") + ", ";
+				sql += dataElement.get("DEWP") + ", ";
+				sql += dataElement.get("STP") + ", ";
+				sql += dataElement.get("SLP") + ", ";
+				sql += dataElement.get("VISIB") + ", ";
+				sql += dataElement.get("WDSP") + ", ";
+				sql += dataElement.get("PRCP") + ", ";
+				sql += dataElement.get("SNDP") + ", ";
+				sql += "b\'" + dataElement.get("FRSHTT") + "\' , ";
+				sql += dataElement.get("CLDC") + ", ";
+				sql += 20;
+				sql += ")";
+				if (i + 1 == dataStack.size()) sql += ";"; else sql += ", ";
 			}
-			rs.close();
+			System.out.println(sql);
+					
+					
+			int result = stmt.executeUpdate(sql);
+			System.out.println("Result: " + result);
 			stmt.close();
 			conn.close();
+			dataStack.clear();	// Clear the datastack
 		} catch(Exception e) {
+			System.out.println("Unable to connect to the database.");
 			e.printStackTrace();
 		}
 	}
