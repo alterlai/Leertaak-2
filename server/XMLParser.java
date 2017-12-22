@@ -20,7 +20,7 @@ public class XMLParser extends Thread {
 	
 	
 	XMLParser(Socket sock){
-		this.sock = sock;
+		this.sock = sock; 
 		this.dataStack = new ArrayList<>();
 		System.out.println("New thread started...");
 	}
@@ -42,13 +42,28 @@ public class XMLParser extends Thread {
 				Iterator it = elementen.iterator();
 				
 				// Iterate over all elements in the XML document and put them in the data map.
-				while(it.hasNext())
-				{
+				while(it.hasNext()) {
 					Element element = (Element) it.next();
-					if(!element.getValue().equals("null"))
-						data.put(element.getName(), element.getValue());
-					else
-						data.put(element.getName(), "NULL");
+					if (!element.getValue().equals("null")) {
+						if (element.getName().equals("TEMP")) {
+							if (dataStack.size() != 0) {
+								if (Double.parseDouble(element.getValue()) < lowTemp(element.getName())) {
+									data.put(element.getName(), String.valueOf(lowTemp(element.getName())));
+								} else if (Double.parseDouble(element.getValue()) > highTemp(element.getName())) {
+									data.put(element.getName(), String.valueOf(highTemp(element.getName())));
+								} else {
+									data.put(element.getName(), element.getValue());
+								}
+							} else {
+								data.put(element.getName(), element.getValue());
+							}
+							
+						} else {
+							data.put(element.getName(), element.getValue());
+						} 
+					} else {
+						data.put(element.getName(), String.valueOf(extraPolate(element.getName())));
+					}
 				}
 
 				//Increment data count
@@ -125,7 +140,7 @@ public class XMLParser extends Thread {
 				sql += dataElement.get("SNDP") + ", ";
 				sql += "b\'" + dataElement.get("FRSHTT") + "\' , ";
 				sql += dataElement.get("CLDC") + ", ";
-				sql += 20;
+				sql += dataElement.get("WNDDIR");
 				sql += ")";
 				if (i + 1 == dataStack.size()) sql += ";"; else sql += ", ";
 			}
@@ -142,4 +157,42 @@ public class XMLParser extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	private double extraPolate(String name) {
+		double sum = 0;
+		double avg = 0;
+		ArrayList<Double> diffList = new ArrayList<Double>();
+		ArrayList<Double> resultList = new ArrayList<Double>();
+		
+		for (int i = dataStack.size(); i < dataStack.size() - 50; i--) {
+			HashMap<String, String> measurement = dataStack.get(i);
+			double temp = Double.parseDouble(measurement.get(name));
+			diffList.add(temp);	
+		}
+		
+		for (int i = 0; i < diffList.size(); i++) {
+			resultList.add(Math.abs(diffList.get(i) - diffList.get(i-1)));
+		}
+		
+		for (int i = 0; i < resultList.size(); i++) {
+			sum += resultList.get(i);
+		}
+		
+		avg = sum/50;
+		return avg;
+		
+	}
+	
+	private double lowTemp(String name) {
+		double temp = extraPolate(name);
+		temp = temp * 0.8;
+		return temp;
+	}
+	
+	private double highTemp(String name) {
+		double temp = extraPolate(name);
+		temp = temp * 1.2;
+		return temp;
+	}
+
 }
