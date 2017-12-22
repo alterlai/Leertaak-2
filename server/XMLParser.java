@@ -1,4 +1,3 @@
-<<<<<<< HEAD:src/server/XMLParser.java
 package server;
 
 import java.net.Socket;
@@ -343,4 +342,3 @@ public class XMLParser extends Thread {
 	}
 
 }
->>>>>>> new1:server/XMLParser.java
