@@ -29,8 +29,8 @@ public class MainServer {
 		
 		
 //		//Debugging
-//		System.out.println("Starting new XMLParser");
-//		XMLParser parser = new XMLParser(new Socket());
-//		parser.start();
+		System.out.println("Starting new XMLParser");
+		XMLParser parser = new XMLParser(new Socket());
+		parser.start();
 	}
 }
