@@ -3,9 +3,10 @@ package server;
 import java.net.Socket;
 import java.io.*;
 import java.util.*;
+
+import com.sun.deploy.util.StringUtils;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
-import org.json.simple.*;
 
 public class XMLParser extends Thread {
 	private Socket sock;
@@ -28,7 +29,7 @@ public class XMLParser extends Thread {
 	//thread run
 	public void run() {
 		datahash();
-
+		adddata();
 	}
 	
 	private Document getXML() throws JDOMException
@@ -91,6 +92,8 @@ public class XMLParser extends Thread {
 					} else {
 						data.put(element.getName(), String.valueOf(extrapolate(element.getName())));
 					}
+
+					//adddata();
 				}
 
 				//Increment data count
@@ -110,14 +113,39 @@ public class XMLParser extends Thread {
 		}
 	}
 
-	private JSONObject data() {
-		JSONObject data = new JSONObject();
-		it = data.entrySet().iterator();
-		while (it.hasNext()){
-			Map.Entry pair = (Map.Entry)it.next();
-			System.out.println(pair.getKey() + " = " + pair.getValue());
+	private void adddata() {
+		String data = "";
+		String temp;
+		String minus = "1";
+		String positive = "0";
+		for (int i=0; i<dataStack.size(); i++) {
+			HashMap<String, String> dataElement = dataStack.get(i);
+			//data += String.format("%6s", dataElement.get("STN")).replace(' ','0');
+			//data += dataElement.get("DATE");
+			//data += dataElement.get("TIME");
+			temp = String.format("%2s", dataElement.get("TEMP")).replace(' ', '0');
+			if (temp.contains("-")){
+				temp = minus + temp;
+			}else{
+				temp = positive + temp;
+			}
+			data += temp;
+			/*data += dataElement.get("DEWP");
+			data += dataElement.get("STP");
+			data += dataElement.get("SLP");
+			data += dataElement.get("VISIB");
+			data += dataElement.get("WDSP");
+			data += dataElement.get("PRCP");
+			data += dataElement.get("SNDP");
+			data += dataElement.get("FRSHTT");
+			data += dataElement.get("CLDC");*/
+			if (i + 1 == dataStack.size()) data += ";"; else data += ", ";
 		}
-		return data;
+		data = data.replace(";", "");
+		data = data.replace("-", "");
+		data = data.replace(":", "");
+		data = data.replace(".", "");
+		System.out.println(data);
 	}
 	
 	private double extrapolate(String name) {
