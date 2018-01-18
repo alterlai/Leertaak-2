@@ -4,3 +4,9 @@
 2018/01/18 15:17:48 - Error writing to client: java.io.IOException: An existing connection was forcibly closed by the remote host
 2018/01/18 15:17:54 - Error connecting to client: java.net.ConnectException: Connection refused: no further information
 2018/01/18 15:39:42 - Error connecting to client: java.net.ConnectException: Connection refused: no further information
+2018/01/18 17:04:53 - Error connecting to client: java.net.ConnectException: Connection refused: no further information
+2018/01/18 17:26:54 - Error connecting to client: java.net.ConnectException: Connection refused: no further information
+2018/01/18 18:42:22 - Error writing to client: java.io.IOException: An existing connection was forcibly closed by the remote host
+2018/01/18 18:54:25 - Error writing to client: java.io.IOException: An existing connection was forcibly closed by the remote host
+2018/01/18 19:03:12 - Error writing to client: java.io.IOException: An existing connection was forcibly closed by the remote host
+2018/01/18 20:16:27 - Error writing to client: java.io.IOException: An existing connection was forcibly closed by the remote host

@@ -4,9 +4,10 @@ import java.net.Socket;
 import java.io.*;
 import java.util.*;
 
-import com.sun.deploy.util.StringUtils;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
+
+import static javax.imageio.ImageIO.getCacheDirectory;
 
 public class XMLParser extends Thread {
 	private Socket sock;
@@ -28,8 +29,8 @@ public class XMLParser extends Thread {
 
 	//thread run
 	public void run() {
+		createFile();
 		datahash();
-		adddata();
 	}
 	
 	private Document getXML() throws JDOMException
@@ -53,7 +54,7 @@ public class XMLParser extends Thread {
 		}
 	}
 
-	private void datahash() {
+	private void datahash()  {
 		Document document = new Document();
 		try {
 			while((document = getXML()) != null) {
@@ -105,47 +106,70 @@ public class XMLParser extends Thread {
 				}
 
 
+				adddata();
 			}
 
 		} catch (JDOMException | NullPointerException e) {
 			e.printStackTrace();
 			System.err.println("main loop");
 		}
+
 	}
 
-	private void adddata() {
+	private void adddata()  {
 		String data = "";
-		String temp;
-		String minus = "1";
+		String temp = "";
+		String dewp = "";
+		String sndp = "";
+		String minus = "10";
 		String positive = "0";
 		for (int i=0; i<dataStack.size(); i++) {
 			HashMap<String, String> dataElement = dataStack.get(i);
-			//data += String.format("%6s", dataElement.get("STN")).replace(' ','0');
-			//data += dataElement.get("DATE");
-			//data += dataElement.get("TIME");
-			temp = String.format("%2s", dataElement.get("TEMP")).replace(' ', '0');
+			data += String.format("%6s", dataElement.get("STN")).replace(' ','0');
+			data += dataElement.get("DATE");
+			data += dataElement.get("TIME");
+			temp = String.format("%5s", dataElement.get("TEMP")).replace(' ', '0');
 			if (temp.contains("-")){
 				temp = minus + temp;
 			}else{
 				temp = positive + temp;
 			}
 			data += temp;
-			/*data += dataElement.get("DEWP");
-			data += dataElement.get("STP");
-			data += dataElement.get("SLP");
-			data += dataElement.get("VISIB");
-			data += dataElement.get("WDSP");
-			data += dataElement.get("PRCP");
-			data += dataElement.get("SNDP");
+			dewp = String.format("%5s", dataElement.get("DEWP")).replace(' ', '0');
+
+			if (dewp.contains("-")){
+				dewp = minus + dewp;
+			}else{
+				dewp = positive + dewp;
+			}
+			data += dewp;
+			data += String.format("%6s", dataElement.get("STP")).replace(' ', '0');
+			data += String.format("%6s", dataElement.get("SLP")).replace(' ', '0');
+			data += String.format("%5s", dataElement.get("VISIB")).replace(' ', '0');
+			data += String.format("%4s", dataElement.get("WDSP")).replace(' ', '0');
+			data += String.format("%5s", dataElement.get("PRCP")).replace(' ', '0');
+
+			sndp = String.format("%4s", dataElement.get("SNDP")).replace(' ', '0');
+
+			if (sndp.contains("-")){
+				sndp = minus + sndp;
+			}else{
+				sndp = positive + sndp;
+			}
+			data += sndp;
 			data += dataElement.get("FRSHTT");
-			data += dataElement.get("CLDC");*/
+			data += String.format("%4s", dataElement.get("CLDC")).replace(' ', '0');
+			data += String.format("%3s", dataElement.get("WNDDIR")).replace(' ', '0');
+
 			if (i + 1 == dataStack.size()) data += ";"; else data += ", ";
 		}
 		data = data.replace(";", "");
 		data = data.replace("-", "");
 		data = data.replace(":", "");
 		data = data.replace(".", "");
+		data += ";";
 		System.out.println(data);
+		writedata(data, "data.dat");
 	}
 	
 	private double extrapolate(String name) {
@@ -183,6 +207,28 @@ public class XMLParser extends Thread {
 		double temp = extrapolate(name);
 		temp = temp * 1.2;
 		return temp;
+	}
+
+	private void writedata(String data, String file){
+		try{
+			FileOutputStream fos = new FileOutputStream(file);
+			DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
+			outStream.writeUTF(data);
+			outStream.close();
+		}catch (Exception e) {
+			System.out.println("ERROR");
+		}
+		System.out.println("Writing...");
+	}
+
+	private void createFile(){
+		try {
+			File file = new File(getCacheDirectory(), "data.dat");
+			file.getParentFile().mkdir();
+			file.createNewFile();
+		} catch(Exception e){
+			System.out.println("File already exists");
+		}
 	}
 
 }

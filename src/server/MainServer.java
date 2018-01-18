@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class MainServer {
-	public static void main(String[] args)
+	public static void main(String[] args ) throws IOException
 	{
 		try {
 			// Start a new server socket.
