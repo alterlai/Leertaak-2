@@ -8,7 +8,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class MainServer {
 	private static int nOfConsumers = 2;		// Numer of consumer threads reading the databuffer.
-	public static void main(String[] args)
+	
+	public static void main(String[] args ) throws IOException
 	{
 		ArrayBlockingQueue<HashMap<String, String>> dataBuffer = new ArrayBlockingQueue<HashMap<String, String>>(15000);	// Data buffer for weatherdata
 		try {

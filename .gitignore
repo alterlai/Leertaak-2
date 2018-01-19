@@ -1,4 +1,7 @@
 /bin/
+<<<<<<< HEAD
+.idea/workspace.xml
+=======
 .idea/.name
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/workspace.xml
@@ -6,3 +9,4 @@
 .idea/modules.xml
 .idea/vcs.xml
 Leertaak-2.iml
+>>>>>>> master

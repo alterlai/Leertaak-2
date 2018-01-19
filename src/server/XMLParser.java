@@ -28,16 +28,16 @@ public class XMLParser extends Thread {
 			while((document = getXML()) != null) {
 				HashMap<String, String> data = new HashMap<>();
 				document = getXML();
-				
+
 				// If the connection has been terminated, stop the thread.
 				if(document == null) break;
-				
+
 				// Grab the parent element.
 				Element classElement = document.getRootElement();
 				Element measurement = classElement.getChild("MEASUREMENT");
 				List<Element> elementen = measurement.getChildren();
 				Iterator it = elementen.iterator();
-				
+
 				// Iterate over all elements in the XML document and put them in the data map.
 				while(it.hasNext()) {
 					Element element = (Element) it.next();
@@ -54,23 +54,63 @@ public class XMLParser extends Thread {
 							} else {
 								data.put(element.getName(), element.getValue());
 							}
-							
+
 						} else {
 							data.put(element.getName(), element.getValue());
-						} 
+						}
 					} else {
-						data.put(element.getName(), String.valueOf(extraPolate(element.getName())));
+						data.put(element.getName(), String.valueOf(extrapolate(element.getName())));
 					}
+
+					//adddata();
 				}
 
 				//Add data to databuffer
 				dataBuffer.add(data);
 			}
-				
+
 		} catch (JDOMException | NullPointerException e) {
 			e.printStackTrace();
 			System.err.println("main loop");
 		}
+
+	}
+
+	private double extrapolate(String name) {
+		double sum = 0;
+		double avg = 0;
+		ArrayList<Double> diffList = new ArrayList<Double>();
+		ArrayList<Double> resultList = new ArrayList<Double>();
+		
+		for (int i = dataBuffer.size(); i < dataBuffer.size() - 50; i--) {
+			HashMap<String, String> measurement = dataBuffer.poll();
+			double temp = Double.parseDouble(measurement.get(name));
+			diffList.add(temp);	
+		}
+		
+		for (int i = 0; i < diffList.size(); i++) {
+			resultList.add(Math.abs(diffList.get(i) - diffList.get(i-1)));
+		}
+		
+		for(int i = 0; i < resultList.size(); i++) {
+			sum += resultList.get(i);
+		}
+		
+		avg = sum/50;
+		return avg;
+		
+}
+	
+	private double lowTemp(String name) {
+		double temp = extrapolate(name);
+		temp = temp * 0.8;
+		return temp;
+	}
+	
+	private double highTemp(String name) {
+		double temp = extrapolate(name);
+		temp = temp * 1.2;
+		return temp;
 	}
 	
 	private Document getXML() throws JDOMException
@@ -93,42 +133,5 @@ public class XMLParser extends Thread {
 			return null;
 		}
 	}
-
-	private double extraPolate(String name) {
-		double sum = 0;
-		double avg = 0;
-		ArrayList<Double> diffList = new ArrayList<Double>();
-		ArrayList<Double> resultList = new ArrayList<Double>();
-		
-		for (int i = dataBuffer.size(); i < dataBuffer.size() - 50; i--) {
-////			HashMap<String, String> measurement = dataBuffer.get(i);
-//			double temp = Double.parseDouble(measurement.get(name));
-//			diffList.add(temp);	
-		}
-		
-		for (int i = 0; i < diffList.size(); i++) {
-			resultList.add(Math.abs(diffList.get(i) - diffList.get(i-1)));
-		}
-		
-		for (int i = 0; i < resultList.size(); i++) {
-			sum += resultList.get(i);
-		}
-		
-		avg = sum/50;
-		return avg;
-		
-	}
-	
-	private double lowTemp(String name) {
-		double temp = extraPolate(name);
-		temp = temp * 0.8;
-		return temp;
-	}
-	
-	private double highTemp(String name) {
-		double temp = extraPolate(name);
-		temp = temp * 1.2;
-		return temp;
-	}
-
 }
+
