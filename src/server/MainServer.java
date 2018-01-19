@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class MainServer {
-	
+	private static int nOfConsumers = 2;		// Numer of consumer threads reading the databuffer.
 	public static void main(String[] args)
 	{
 		ArrayBlockingQueue<HashMap<String, String>> dataBuffer = new ArrayBlockingQueue<HashMap<String, String>>(15000);	// Data buffer for weatherdata
@@ -16,6 +16,15 @@ public class MainServer {
 			ServerSocket sock = new ServerSocket(7789);
 			Socket client;
 			System.out.println("Server started...");
+			
+			// Create consumer threads
+			for (int i = 0; i < nOfConsumers; i++)
+			{
+				BufferConsumer consumer = new BufferConsumer(dataBuffer);
+				consumer.run();
+				System.out.println("new consumer");
+			}
+			
 			// Accept new client connections.
 			while(true){
 				if ((client = sock.accept()) != null)

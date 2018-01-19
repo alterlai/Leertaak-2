@@ -7,6 +7,5 @@
 	<classpathentry kind="lib" path="libs/jdom-2.0.6-junit.jar"/>
 	<classpathentry kind="lib" path="libs/jdom-2.0.6-sources.jar"/>
 	<classpathentry kind="lib" path="libs/jdom-2.0.6.jar"/>
-	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.45-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
