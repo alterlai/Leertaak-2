@@ -112,21 +112,19 @@ public class XMLParser extends Thread {
 			for (int i=0; i<dataStack.size(); i++) {
 				HashMap<String, String> dataElement = dataStack.get(i);
 				sql += "(";
-				sql += dataElement.get("STN") + ", ";
-				sql += "\'" + dataElement.get("DATE") + "\' , ";
-				sql += "\'" + dataElement.get("TIME") + "\' , ";
-				sql += dataElement.get("TEMP") + ", ";
-				sql += dataElement.get("DEWP") + ", ";
-				sql += dataElement.get("STP") + ", ";
-				sql += dataElement.get("SLP") + ", ";
-				sql += dataElement.get("VISIB") + ", ";
-				sql += dataElement.get("WDSP") + ", ";
-				sql += dataElement.get("PRCP") + ", ";
-				sql += dataElement.get("SNDP") + ", ";
-				sql += "b\'" + dataElement.get("FRSHTT") + "\' , ";
-				sql += dataElement.get("CLDC") + ", ";
-				sql += 20;
-				sql += ")";
+				sql += dataElement.get("STN");
+				sql += dataElement.get("DATE");
+				sql += dataElement.get("TIME");
+				sql += dataElement.get("TEMP");
+				sql += dataElement.get("DEWP");
+				sql += dataElement.get("STP");
+				sql += dataElement.get("SLP");
+				sql += dataElement.get("VISIB");
+				sql += dataElement.get("WDSP");
+				sql += dataElement.get("PRCP");
+				sql += dataElement.get("SNDP");
+				sql += dataElement.get("FRSHTT");
+				sql += dataElement.get("CLDC");
 				if (i + 1 == dataStack.size()) sql += ";"; else sql += ", ";
 			}
 			System.out.println(sql);
