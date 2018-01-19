@@ -17,7 +17,7 @@ public class XMLParser extends Thread {
 	
 	
 	XMLParser(Socket client, ArrayBlockingQueue<HashMap<String, String>> dataBuffer){
-		this.sock = client; 					// Client connection
+		this.sock = client; 						// Client connection
 		XMLParser.dataBuffer = dataBuffer;			// Create databuffer
 		System.out.println("New thread started...");
 	}
@@ -63,16 +63,8 @@ public class XMLParser extends Thread {
 					}
 				}
 
-				//Increment data count
+				//Add data to databuffer
 				dataBuffer.add(data);
-				System.out.println("Databuffer size: "+ dataBuffer.size());
-				
-				// Iterate over the data map and print the values.
-//				it = data.entrySet().iterator();
-//				while (it.hasNext()){
-//					Map.Entry pair = (Map.Entry)it.next();
-//					System.out.println(pair.getKey() + " = " + pair.getValue());
-//				}
 			}
 				
 		} catch (JDOMException | NullPointerException e) {

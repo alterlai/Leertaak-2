@@ -19,7 +19,8 @@ public class BufferConsumer extends Thread{
 		{
 			if (!dataBuffer.isEmpty())
 			{
-				System.out.println(dataBuffer.peek());
+				HashMap<String, String> measurementBlock = dataBuffer.poll();
+				// TODO Sorteren en schrijven naar disk.
 			}
 		}
 	}

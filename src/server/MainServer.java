@@ -21,8 +21,7 @@ public class MainServer {
 			for (int i = 0; i < nOfConsumers; i++)
 			{
 				BufferConsumer consumer = new BufferConsumer(dataBuffer);
-				consumer.run();
-				System.out.println("new consumer");
+				consumer.start();
 			}
 			
 			// Accept new client connections.
