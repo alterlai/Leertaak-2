@@ -19,17 +19,18 @@ public class BufferConsumer extends Thread{
 	}
 	
 	public void run() {
-		String data = "";
 		String temp = "";
 		String dewp = "";
 		String sndp = "";
 		String minus = "10";
 		String positive = "0";
+		boolean append = true;
 		
 		while (true)
 		{
 			if (!dataBuffer.isEmpty())
 			{
+				String data = "";
 				HashMap<String, String> dataBlock = dataBuffer.poll();
 				data += String.format("%6s", dataBlock.get("STN")).replace(' ','0');
 				data += dataBlock.get("DATE");
@@ -74,16 +75,16 @@ public class BufferConsumer extends Thread{
 				data = data.replace(".", "");
 				data += ";";
 				System.out.println(data);
-				writedata(data, "data.dat");
+				writedata(data, "data.dat", append);
 			}
 		
 		}
 	}
 	
 	
-	private void writedata(String data, String file){
+	private void writedata(String data, String file, boolean append){
 		try{
-			FileOutputStream fos = new FileOutputStream(file);
+			FileOutputStream fos = new FileOutputStream(file, append);
 			DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos));
 			outStream.writeUTF(data);
 			outStream.close();
@@ -93,13 +94,15 @@ public class BufferConsumer extends Thread{
 		System.out.println("Writing...");
 	}
 	
-	private void createFile(){
+	private Boolean createFile(){
 		try {
 			File file = new File("", "data.dat");
 			file.getParentFile().mkdir();
 			file.createNewFile();
+			return true;
 		} catch(Exception e){
 			System.out.println("File already exists");
+			return false;
 		}
 	}
 	
