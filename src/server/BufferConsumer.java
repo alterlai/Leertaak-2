@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,6 +27,7 @@ public class BufferConsumer extends Thread{
 		String positive = "0";
 		String stationname = "";
 		String date = "";
+		ArrayList<String> dataset = new ArrayList<>();
 		boolean append = true;
 		
 		while (true)
@@ -78,6 +80,7 @@ public class BufferConsumer extends Thread{
 				data = data.replace(":", "");
 				data = data.replace(".", "");
 				data += ";";
+				storeTempHistory(data, dataset);
 				createFile(stationname, date, data, append);
 			}
 		
@@ -117,6 +120,16 @@ public class BufferConsumer extends Thread{
 		}
 
 		writedata(data, fileloc, append);
+	}
+
+	private ArrayList<String> storeTempHistory(String data, ArrayList<String> dataset){
+		if(dataset.size() < 3){
+			dataset.add(data);
+		}else{
+			dataset.remove(0);
+			dataset.add(data);
+		}
+		return dataset;
 	}
 	
 	
